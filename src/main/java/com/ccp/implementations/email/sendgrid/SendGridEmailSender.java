@@ -13,7 +13,7 @@ import com.ccp.decorators.CcpStringDecorator;
 import com.ccp.especifications.email.CcpEmailSender;
 import com.ccp.especifications.http.CcpHttpHandler;
 import com.ccp.especifications.http.CcpHttpResponseType;
-import com.ccp.exceptions.email.CcpInvalidEmailAdresses;
+import com.ccp.exceptions.email.CcpErrorEmailInvalidAdresses;
 import com.ccp.http.CcpHttpMethods;
 
 class SendGridEmailSender implements CcpEmailSender {
@@ -75,7 +75,7 @@ class SendGridEmailSender implements CcpEmailSender {
 		boolean hasInvalidEmails = invalidEmails.isEmpty() == false;
 		
 		if(hasInvalidEmails) {
-			throw new CcpInvalidEmailAdresses(invalidEmails);
+			throw new CcpErrorEmailInvalidAdresses(invalidEmails);
 		}
 		
 		List<Map<String, Object>> to = list.stream().map(email -> CcpOtherConstants.EMPTY_JSON.put(CcpStringConstants.EMAIL.value,email).content).collect(Collectors.toList());
