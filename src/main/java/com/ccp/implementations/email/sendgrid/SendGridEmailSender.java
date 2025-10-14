@@ -94,8 +94,8 @@ class SendGridEmailSender implements CcpEmailSender {
 	private List<CcpJsonRepresentation> getPersonalizations(String... emails) {
 		
 		List<String> list = Arrays.asList(emails);
-		List<CcpEmailDecorator> invalidEmails = list.stream().map(email -> new CcpStringDecorator(email).email()).filter(x -> x.isValid() == false).collect(Collectors.toList());
-		boolean hasInvalidEmails = invalidEmails.isEmpty() == false;
+		List<CcpEmailDecorator> invalidEmails = list.stream().map(email -> new CcpStringDecorator(email).email()).filter(x -> false == x.isValid()).collect(Collectors.toList());
+		boolean hasInvalidEmails = false == invalidEmails.isEmpty();
 		
 		if(hasInvalidEmails) {
 			throw new CcpErrorEmailInvalidAdresses(invalidEmails);
