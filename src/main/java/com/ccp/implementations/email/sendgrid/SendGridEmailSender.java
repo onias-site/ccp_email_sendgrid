@@ -33,9 +33,8 @@ enum SendGridEmailSenderSpecialWords implements CcpJsonFieldName{
 	public String getValue() {
 		return this.value;
 	}
-
 }
-
+//FIXME CORRIGIR CONTA DO SENDGRID
 class SendGridEmailSender implements CcpEmailSender {
 
 	public CcpJsonRepresentation send(CcpJsonRepresentation emailApiParameters) {
