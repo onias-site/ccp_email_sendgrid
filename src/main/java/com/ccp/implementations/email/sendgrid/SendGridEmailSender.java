@@ -37,7 +37,7 @@ enum SendGridEmailSenderSpecialWords implements CcpJsonFieldName{
 //FIXME CORRIGIR CONTA DO SENDGRID
 class SendGridEmailSender implements CcpEmailSender {
 
-	public CcpJsonRepresentation send(CcpJsonRepresentation emailApiParameters) {
+	public CcpJsonRepresentation apply(CcpJsonRepresentation emailApiParameters) {
 		String apiTokenKeyName = emailApiParameters.getAsString(JsonFieldNames.token);
 
 		String apiUrlKeyName = emailApiParameters.getAsString(JsonFieldNames.url);
