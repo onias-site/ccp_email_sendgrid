@@ -63,7 +63,7 @@ class SendGridEmailSender implements CcpEmailSender {
 		String sendgridApiKey =  systemProperties.getDynamicVersion().getAsString(apiTokenKeyName);
 		String sendgridApiUrl =  systemProperties.getDynamicVersion().getAsString(apiUrlKeyName);
 
-		CcpHttpHandler ccpHttpHandler = new CcpHttpHandler(202);
+		CcpHttpHandler ccpHttpHandler = new CcpHttpHandler(202, sendgridApiUrl);
 		
 		CcpJsonRepresentation headers = CcpOtherConstants.EMPTY_JSON
 				.put(JsonFieldNames.Authorization, "Bearer " + sendgridApiKey)
@@ -86,7 +86,7 @@ class SendGridEmailSender implements CcpEmailSender {
 				;
 		
 //		this.throwFakeServerErrorToTestingProcessFlow();
-		ccpHttpHandler.executeHttpRequest("sendEmail", sendgridApiUrl, method, headers, body, CcpHttpResponseType.singleRecord);
+		ccpHttpHandler.executeHttpRequest("sendEmail", method, headers, body, CcpHttpResponseType.singleRecord);
 		return CcpOtherConstants.EMPTY_JSON;
 	}
 
