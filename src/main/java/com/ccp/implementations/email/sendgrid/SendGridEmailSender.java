@@ -36,6 +36,12 @@ enum SendGridEmailSenderSpecialWords implements CcpJsonFieldName{
 	}
 }
 //FIXME CORRIGIR CONTA DO SENDGRID
+/**
+ * Implementação de {@code CcpEmailSender} via API SendGrid. Monta o payload JSON com
+ * remetente, destinatários, assunto e corpo, e envia via {@code POST} autenticado por Bearer token.
+ * Valida os endereços de e-mail antes do envio; lança {@code CcpErrorEmailInvalidAdresses} se
+ * algum endereço for inválido.
+ */
 class SendGridEmailSender implements CcpEmailSender {
 
 	public CcpJsonRepresentation sendSimpleTextEmailMessage(String providerToken, String providerUrl, String templateId, String sender, String subject, String message, CcpHttpContentType contentType, String... emails) {
