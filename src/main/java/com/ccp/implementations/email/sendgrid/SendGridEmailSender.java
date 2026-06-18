@@ -5,13 +5,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.ccp.constantes.CcpOtherConstants;
+import com.ccp.constants.CcpOtherConstants;
 import com.ccp.decorators.CcpEmailDecorator;
 import com.ccp.decorators.CcpJsonRepresentation;
 import com.ccp.decorators.CcpJsonRepresentation.CcpJsonFieldName;
 import com.ccp.decorators.CcpStringDecorator;
 import com.ccp.especifications.email.CcpEmailSender;
-import com.ccp.especifications.email.CcpErrorEmailInvalidAdresses;
 import com.ccp.especifications.http.CcpHttpContentType;
 import com.ccp.especifications.http.CcpHttpHandler;
 import com.ccp.especifications.http.CcpHttpMethods;
@@ -74,20 +73,27 @@ class SendGridEmailSender implements CcpEmailSender {
 	}
 
 	private List<CcpJsonRepresentation> getPersonalizations(String... emails) {
-		
+
 		List<String> list = Arrays.asList(emails);
 		List<CcpEmailDecorator> invalidEmails = list.stream().map(email -> new CcpStringDecorator(email).email()).filter(x -> false == x.isValid()).collect(Collectors.toList());
 		boolean hasInvalidEmails = false == invalidEmails.isEmpty();
-		
+
 		if(hasInvalidEmails) {
 			throw new CcpErrorEmailInvalidAdresses(invalidEmails);
 		}
-		
+
 		List<Map<String, Object>> to = list.stream().map(email -> CcpOtherConstants.EMPTY_JSON.put(JsonFieldNames.email, email).content).collect(Collectors.toList());
 		List<CcpJsonRepresentation> asList = Arrays.asList( CcpOtherConstants.EMPTY_JSON.put(JsonFieldNames.to, to));
 		return asList;
 	}
-	
+
+	@SuppressWarnings("serial")
+	public static class CcpErrorEmailInvalidAdresses extends RuntimeException {
+		private CcpErrorEmailInvalidAdresses(List<?> invalidEmails) {
+			super("These following mail addresses are not valid: " + invalidEmails);
+		}
+	}
+
 }
 
 
