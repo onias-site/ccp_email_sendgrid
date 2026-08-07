@@ -45,7 +45,6 @@ class SendGridEmailSender implements CcpEmailSender {
 
 	public CcpJsonRepresentation sendSimpleTextEmailMessage(String providerToken, String providerUrl, String templateId, String sender, String subject, String message, CcpHttpContentType contentType, String... emails) {
 
-
 		CcpHttpHandler ccpHttpHandler = new CcpHttpHandler(202, providerUrl);
 		
 		CcpJsonRepresentation headers = CcpOtherConstants.EMPTY_JSON
@@ -93,7 +92,7 @@ class SendGridEmailSender implements CcpEmailSender {
 			super("These following mail addresses are not valid: " + invalidEmails);
 		}
 	}
-
 }
+
 
 
