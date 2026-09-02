@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 import com.ccp.constants.CcpOtherConstants;
 import com.ccp.decorators.CcpEmailDecorator;
 import com.ccp.decorators.CcpJsonRepresentation;
-import com.ccp.decorators.CcpJsonRepresentation.CcpJsonFieldName;
 import com.ccp.decorators.CcpStringDecorator;
 import com.ccp.especifications.email.CcpEmailSender;
 import com.ccp.especifications.http.CcpHttpContentType;
@@ -16,24 +15,10 @@ import com.ccp.especifications.http.CcpHttpHandler;
 import com.ccp.especifications.http.CcpHttpMethods;
 import com.ccp.especifications.http.CcpHttpResponseType;
 import com.ccp.implementations.email.sendgrid.SendGridEmailSenderSpecialWords.JsonFieldNames;
+import java.util.stream.Stream;
 
 
-enum SendGridEmailSenderSpecialWords implements CcpJsonFieldName{
-	User_Agent("User-agent")
-	;
-	enum JsonFieldNames implements CcpJsonFieldName{
-		token, url, message, subject, sender, format, method, emails, Authorization, Accept, from, personalizations, content, type, value, to, email
-	}
-	private final String value;
-	
-	private SendGridEmailSenderSpecialWords(String value) {
-		this.value = value;
-	}
 
-	public String getValue() {
-		return this.value;
-	}
-}
 //FIXME CORRIGIR CONTA DO SENDGRID
 /**
  * Implementação de {@code CcpEmailSender} via API SendGrid. Monta o payload JSON com
@@ -46,24 +31,32 @@ class SendGridEmailSender implements CcpEmailSender {
 	public CcpJsonRepresentation sendSimpleTextEmailMessage(String providerToken, String providerUrl, String templateId, String sender, String subject, String message, CcpHttpContentType contentType, String... emails) {
 
 		CcpHttpHandler ccpHttpHandler = new CcpHttpHandler(202, providerUrl);
-		
-		CcpJsonRepresentation headers = CcpOtherConstants.EMPTY_JSON
-				.put(JsonFieldNames.Authorization, "Bearer " + providerToken)
-				.put(SendGridEmailSenderSpecialWords.User_Agent, "sendgrid/3.0.0;java")
+		String valorMais = "Bearer " + providerToken;
+		CcpJsonRepresentation put = CcpOtherConstants.EMPTY_JSON
+				.put(JsonFieldNames.Authorization, valorMais);
+				CcpJsonRepresentation put2 = put
+				.put(SendGridEmailSenderSpecialWords.User_Agent, "sendgrid/3.0.0;java");
+
+				CcpJsonRepresentation headers = put2
 				.put(JsonFieldNames.Accept, "application/json")
 		;
 		
 
 		List<CcpJsonRepresentation> personalizations = this.getPersonalizations(emails);
-		
-		CcpJsonRepresentation body = CcpOtherConstants.EMPTY_JSON
-				.addToItem(JsonFieldNames.from, JsonFieldNames.email, sender)
-				.put(JsonFieldNames.subject, subject)
-				.put(JsonFieldNames.personalizations, personalizations)
-				.addToList(JsonFieldNames.content, CcpOtherConstants.EMPTY_JSON
+		CcpJsonRepresentation addToItem = CcpOtherConstants.EMPTY_JSON
+				.addToItem(JsonFieldNames.from, JsonFieldNames.email, sender);
+				CcpJsonRepresentation put3 = addToItem
+				.put(JsonFieldNames.subject, subject);
+				CcpJsonRepresentation put4 = put3
+				.put(JsonFieldNames.personalizations, personalizations);
+				CcpJsonRepresentation put5 = CcpOtherConstants.EMPTY_JSON
 						
-				.put(JsonFieldNames.type, contentType)
-				.put(JsonFieldNames.value, message))
+				.put(JsonFieldNames.type, contentType);
+				CcpJsonRepresentation put6 = put5
+				.put(JsonFieldNames.value, message);
+
+				CcpJsonRepresentation body = put4
+				.addToList(JsonFieldNames.content, put6)
 				;
 		
 		//		this.throwFakeServerErrorToTestingProcessFlow();
@@ -74,15 +67,23 @@ class SendGridEmailSender implements CcpEmailSender {
 	private List<CcpJsonRepresentation> getPersonalizations(String... emails) {
 
 		List<String> list = Arrays.asList(emails);
-		List<CcpEmailDecorator> invalidEmails = list.stream().map(email -> new CcpStringDecorator(email).email()).filter(x -> false == x.isValid()).collect(Collectors.toList());
-		boolean hasInvalidEmails = false == invalidEmails.isEmpty();
+		Stream<String> stream = list.stream();
+		var streamMap = stream.map(email -> new CcpStringDecorator(email).email());
+		var filter = streamMap.filter(x -> false == x.isValid());
+		List<CcpEmailDecorator> invalidEmails = filter.collect(Collectors.toList());
+		boolean invalidEmailsEmpty = invalidEmails.isEmpty();
+		boolean hasInvalidEmails = false == invalidEmailsEmpty;
 
 		if(hasInvalidEmails) {
-			throw new CcpErrorEmailInvalidAdresses(invalidEmails);
+			CcpErrorEmailInvalidAdresses ccpErrorEmailInvalidAdresses = new CcpErrorEmailInvalidAdresses(invalidEmails);
+			throw ccpErrorEmailInvalidAdresses;
 		}
+		Stream<String> stream2 = list.stream();
+		var stream2Map = stream2.map(email -> CcpOtherConstants.EMPTY_JSON.put(JsonFieldNames.email, email).content);
 
-		List<Map<String, Object>> to = list.stream().map(email -> CcpOtherConstants.EMPTY_JSON.put(JsonFieldNames.email, email).content).collect(Collectors.toList());
-		List<CcpJsonRepresentation> asList = Arrays.asList( CcpOtherConstants.EMPTY_JSON.put(JsonFieldNames.to, to));
+		List<Map<String, Object>> to = stream2Map.collect(Collectors.toList());
+		CcpJsonRepresentation put7 = CcpOtherConstants.EMPTY_JSON.put(JsonFieldNames.to, to);
+		List<CcpJsonRepresentation> asList = Arrays.asList( put7);
 		return asList;
 	}
 
@@ -93,6 +94,3 @@ class SendGridEmailSender implements CcpEmailSender {
 		}
 	}
 }
-
-
-

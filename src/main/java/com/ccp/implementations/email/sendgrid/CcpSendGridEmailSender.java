@@ -9,7 +9,8 @@ import com.ccp.especifications.email.CcpEmailSender;
 public class CcpSendGridEmailSender implements CcpInstanceProvider<CcpEmailSender> {
 
 	public CcpEmailSender getInstance() {
-		return new SendGridEmailSender();
+		SendGridEmailSender sendGridEmailSender = new SendGridEmailSender();
+		return sendGridEmailSender;
 	}
 
 }
