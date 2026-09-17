@@ -19,6 +19,7 @@ import java.util.stream.Stream;
 
 
 
+import com.ccp.json.fields.validation.CcpJsonCommonsFields;
 //FIXME CORRIGIR CONTA DO SENDGRID
 /**
  * Implementação de {@code CcpEmailSender} via API SendGrid. Monta o payload JSON com
@@ -33,12 +34,12 @@ class SendGridEmailSender implements CcpEmailSender {
 		CcpHttpHandler ccpHttpHandler = new CcpHttpHandler(202, providerUrl);
 		String valorMais = "Bearer " + providerToken;
 		CcpJsonRepresentation put = CcpOtherConstants.EMPTY_JSON
-				.put(JsonFieldNames.Authorization, valorMais);
+				.put(CcpJsonCommonsFields.Authorization, valorMais);
 				CcpJsonRepresentation put2 = put
 				.put(SendGridEmailSenderSpecialWords.User_Agent, "sendgrid/3.0.0;java");
 
 				CcpJsonRepresentation headers = put2
-				.put(JsonFieldNames.Accept, "application/json")
+				.put(CcpJsonCommonsFields.Accept, "application/json")
 		;
 		
 
@@ -51,9 +52,9 @@ class SendGridEmailSender implements CcpEmailSender {
 				.put(JsonFieldNames.personalizations, personalizations);
 				CcpJsonRepresentation put5 = CcpOtherConstants.EMPTY_JSON
 						
-				.put(JsonFieldNames.type, contentType);
+				.put(CcpJsonCommonsFields.type, contentType);
 				CcpJsonRepresentation put6 = put5
-				.put(JsonFieldNames.value, message);
+				.put(CcpJsonCommonsFields.value, message);
 
 				CcpJsonRepresentation body = put4
 				.addToList(JsonFieldNames.content, put6)

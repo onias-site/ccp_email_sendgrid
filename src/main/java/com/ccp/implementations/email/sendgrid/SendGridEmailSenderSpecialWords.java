@@ -2,11 +2,11 @@ package com.ccp.implementations.email.sendgrid;
 
 import com.ccp.decorators.CcpJsonFieldName;
 
+
 enum SendGridEmailSenderSpecialWords implements CcpJsonFieldName{
 	User_Agent("User-agent")
 	;
-	enum JsonFieldNames implements CcpJsonFieldName{
-		token, url, message, subject, sender, format, method, emails, Authorization, Accept, from, personalizations, content, type, value, to, email
+	enum JsonFieldNames implements CcpJsonFieldName{ url, message, subject, sender, format, method, from, personalizations, content, to, email
 	}
 	private final String value;
 	
