@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 
 
 import com.ccp.json.fields.validation.CcpJsonCommonsFields;
-//FIXME CORRIGIR CONTA DO SENDGRID
+//TODO CORRIGIR CONTA DO SENDGRID
 /**
  * Implementação de {@code CcpEmailSender} via API SendGrid. Monta o payload JSON com
  * remetente, destinatários, assunto e corpo, e envia via {@code POST} autenticado por Bearer token.
