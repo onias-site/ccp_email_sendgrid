@@ -4,7 +4,7 @@ import com.ccp.dependency.injection.CcpInstanceProvider;
 import com.ccp.especifications.email.CcpEmailSender;
 
 /**
- * Provedor de DI que expõe {@code SendGridEmailSender} como implementação de {@code CcpEmailSender}.
+ * DI provider that exposes {@code SendGridEmailSender} as the {@code CcpEmailSender} implementation.
  */
 public class CcpSendGridEmailSender implements CcpInstanceProvider<CcpEmailSender> {
 

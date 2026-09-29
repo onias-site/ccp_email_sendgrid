@@ -20,44 +20,44 @@ import java.util.stream.Stream;
 
 
 import com.ccp.json.fields.validation.CcpJsonCommonsFields;
-//TODO CORRIGIR CONTA DO SENDGRID
+//TODO FIX THE SENDGRID ACCOUNT
 /**
- * Implementação de {@code CcpEmailSender} via API SendGrid. Monta o payload JSON com
- * remetente, destinatários, assunto e corpo, e envia via {@code POST} autenticado por Bearer token.
- * Valida os endereços de e-mail antes do envio; lança {@code CcpErrorEmailInvalidAdresses} se
- * algum endereço for inválido.
+ * {@code CcpEmailSender} implementation using the SendGrid API. Builds the JSON payload with
+ * sender, recipients, subject and body, and sends it via {@code POST} authenticated with a Bearer token.
+ * Validates the e-mail addresses before sending; throws {@code CcpErrorEmailInvalidAdresses} if
+ * any address is invalid.
  */
 class SendGridEmailSender implements CcpEmailSender {
 
 	public CcpJsonRepresentation sendSimpleTextEmailMessage(String providerToken, String providerUrl, String templateId, String sender, String subject, String message, CcpHttpContentType contentType, String... emails) {
 
 		CcpHttpHandler ccpHttpHandler = new CcpHttpHandler(202, providerUrl);
-		String valorMais = "Bearer " + providerToken;
-		CcpJsonRepresentation put = CcpOtherConstants.EMPTY_JSON
-				.put(CcpJsonCommonsFields.Authorization, valorMais);
-				CcpJsonRepresentation put2 = put
+		String bearerToken = "Bearer " + providerToken;
+		CcpJsonRepresentation headersWithAuthorization = CcpOtherConstants.EMPTY_JSON
+				.put(CcpJsonCommonsFields.Authorization, bearerToken);
+				CcpJsonRepresentation headersWithUserAgent = headersWithAuthorization
 				.put(SendGridEmailSenderSpecialWords.User_Agent, "sendgrid/3.0.0;java");
 
-				CcpJsonRepresentation headers = put2
+				CcpJsonRepresentation headers = headersWithUserAgent
 				.put(CcpJsonCommonsFields.Accept, "application/json")
 		;
 		
 
 		List<CcpJsonRepresentation> personalizations = this.getPersonalizations(emails);
-		CcpJsonRepresentation addToItem = CcpOtherConstants.EMPTY_JSON
+		CcpJsonRepresentation bodyWithSender = CcpOtherConstants.EMPTY_JSON
 				.addToItem(JsonFieldNames.from, JsonFieldNames.email, sender);
-				CcpJsonRepresentation put3 = addToItem
+				CcpJsonRepresentation bodyWithSubject = bodyWithSender
 				.put(JsonFieldNames.subject, subject);
-				CcpJsonRepresentation put4 = put3
+				CcpJsonRepresentation bodyWithPersonalizations = bodyWithSubject
 				.put(JsonFieldNames.personalizations, personalizations);
-				CcpJsonRepresentation put5 = CcpOtherConstants.EMPTY_JSON
+				CcpJsonRepresentation contentWithType = CcpOtherConstants.EMPTY_JSON
 						
 				.put(CcpJsonCommonsFields.type, contentType);
-				CcpJsonRepresentation put6 = put5
+				CcpJsonRepresentation contentWithTypeAndValue = contentWithType
 				.put(CcpJsonCommonsFields.value, message);
 
-				CcpJsonRepresentation body = put4
-				.addToList(JsonFieldNames.content, put6)
+				CcpJsonRepresentation body = bodyWithPersonalizations
+				.addToList(JsonFieldNames.content, contentWithTypeAndValue)
 				;
 		
 		//		this.throwFakeServerErrorToTestingProcessFlow();
@@ -68,10 +68,10 @@ class SendGridEmailSender implements CcpEmailSender {
 	private List<CcpJsonRepresentation> getPersonalizations(String... emails) {
 
 		List<String> list = Arrays.asList(emails);
-		Stream<String> stream = list.stream();
-		var streamMap = stream.map(email -> new CcpStringDecorator(email).email());
-		var filter = streamMap.filter(x -> false == x.isValid());
-		List<CcpEmailDecorator> invalidEmails = filter.collect(Collectors.toList());
+		Stream<String> emailsStream = list.stream();
+		var emailDecoratorsStream = emailsStream.map(email -> new CcpStringDecorator(email).email());
+		var invalidEmailsStream = emailDecoratorsStream.filter(x -> false == x.isValid());
+		List<CcpEmailDecorator> invalidEmails = invalidEmailsStream.collect(Collectors.toList());
 		boolean invalidEmailsEmpty = invalidEmails.isEmpty();
 		boolean hasInvalidEmails = false == invalidEmailsEmpty;
 
@@ -79,13 +79,13 @@ class SendGridEmailSender implements CcpEmailSender {
 			CcpErrorEmailInvalidAdresses ccpErrorEmailInvalidAdresses = new CcpErrorEmailInvalidAdresses(invalidEmails);
 			throw ccpErrorEmailInvalidAdresses;
 		}
-		Stream<String> stream2 = list.stream();
-		var stream2Map = stream2.map(email -> CcpOtherConstants.EMPTY_JSON.put(JsonFieldNames.email, email).content);
+		Stream<String> recipientEmailsStream = list.stream();
+		var recipientsStream = recipientEmailsStream.map(email -> CcpOtherConstants.EMPTY_JSON.put(JsonFieldNames.email, email).content);
 
-		List<Map<String, Object>> to = stream2Map.collect(Collectors.toList());
-		CcpJsonRepresentation put7 = CcpOtherConstants.EMPTY_JSON.put(JsonFieldNames.to, to);
-		List<CcpJsonRepresentation> asList = Arrays.asList( put7);
-		return asList;
+		List<Map<String, Object>> to = recipientsStream.collect(Collectors.toList());
+		CcpJsonRepresentation personalization = CcpOtherConstants.EMPTY_JSON.put(JsonFieldNames.to, to);
+		List<CcpJsonRepresentation> personalizations = Arrays.asList( personalization);
+		return personalizations;
 	}
 
 	@SuppressWarnings("serial")
