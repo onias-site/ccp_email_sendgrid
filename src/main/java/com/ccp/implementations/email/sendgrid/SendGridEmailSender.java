@@ -29,6 +29,21 @@ import com.ccp.json.fields.validation.CcpJsonCommonsFields;
  */
 class SendGridEmailSender implements CcpEmailSender {
 
+	/**
+	 * Validates the recipients and posts the message to SendGrid with a Bearer token, expecting status 202. The
+	 * {@code content.type} sent is the enum constant name ({@code TEXT_PLAIN}/{@code TEXT_HTML}), not a MIME type, and
+	 * the template id is not used.
+	 * @param providerToken the SendGrid API key
+	 * @param providerUrl the SendGrid send URL
+	 * @param templateId not used
+	 * @param sender the sender address
+	 * @param subject the subject
+	 * @param message the body
+	 * @param contentType the content type
+	 * @param emails the recipients
+	 * @return the body sent to SendGrid
+	 * @throws CcpErrorEmailInvalidAdresses when a recipient is not a valid e-mail
+	 */
 	public CcpJsonRepresentation sendSimpleTextEmailMessage(String providerToken, String providerUrl, String templateId, String sender, String subject, String message, CcpHttpContentType contentType, String... emails) {
 
 		CcpHttpHandler ccpHttpHandler = new CcpHttpHandler(202, providerUrl);
@@ -65,6 +80,12 @@ class SendGridEmailSender implements CcpEmailSender {
 		return body;
 	}
 
+	/**
+	 * Builds the single personalization with every recipient, after validating them.
+	 * @param emails the recipients
+	 * @return the personalizations
+	 * @throws CcpErrorEmailInvalidAdresses when a recipient is not a valid e-mail
+	 */
 	private List<CcpJsonRepresentation> getPersonalizations(String... emails) {
 
 		List<String> list = Arrays.asList(emails);
@@ -88,8 +109,13 @@ class SendGridEmailSender implements CcpEmailSender {
 		return personalizations;
 	}
 
+	/** Raised when some recipient is not a valid e-mail address. */
 	@SuppressWarnings("serial")
 	public static class CcpErrorEmailInvalidAdresses extends RuntimeException {
+		/**
+		 * Builds the error listing the invalid addresses.
+		 * @param invalidEmails the invalid addresses
+		 */
 		private CcpErrorEmailInvalidAdresses(List<?> invalidEmails) {
 			super("These following mail addresses are not valid: " + invalidEmails);
 		}
