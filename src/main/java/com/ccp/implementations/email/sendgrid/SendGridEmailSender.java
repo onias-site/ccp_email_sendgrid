@@ -31,11 +31,12 @@ class SendGridEmailSender implements CcpEmailSender {
 
 	/**
 	 * Validates the recipients and posts the message to SendGrid with a Bearer token, expecting status 202. The
-	 * {@code content.type} sent is the enum constant name ({@code TEXT_PLAIN}/{@code TEXT_HTML}), not a MIME type, and
-	 * the template id is not used.
+	 * {@code content.type} is the MIME type ({@code text/plain}/{@code text/html}); until 2026-10-06 it was the enum
+	 * constant name, which SendGrid refuses. The template id is not sent on purpose: it is the key of the system's own
+	 * message template, already resolved into {@code message}, not a SendGrid template.
 	 * @param providerToken the SendGrid API key
 	 * @param providerUrl the SendGrid send URL
-	 * @param templateId not used
+	 * @param templateId not used (see above)
 	 * @param sender the sender address
 	 * @param subject the subject
 	 * @param message the body
@@ -67,7 +68,7 @@ class SendGridEmailSender implements CcpEmailSender {
 				.put(JsonFieldNames.personalizations, personalizations);
 				CcpJsonRepresentation contentWithType = CcpOtherConstants.EMPTY_JSON
 						
-				.put(CcpJsonCommonsFields.type, contentType);
+				.put(CcpJsonCommonsFields.type, contentType.mimeType);
 				CcpJsonRepresentation contentWithTypeAndValue = contentWithType
 				.put(CcpJsonCommonsFields.value, message);
 
