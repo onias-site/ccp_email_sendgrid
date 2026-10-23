@@ -28,6 +28,10 @@ import com.ccp.json.fields.validation.CcpJsonCommonsFields;
  * any address is invalid.
  */
 class SendGridEmailSender implements CcpEmailSender {
+	/** The single instance: the class keeps no state. */
+	public final static SendGridEmailSender INSTANCE = new SendGridEmailSender();
+
+	private SendGridEmailSender() {}
 
 	/**
 	 * Validates the recipients and posts the message to SendGrid with a Bearer token, expecting status 202. The
