@@ -7,7 +7,7 @@ import com.ccp.decorators.CcpJsonFieldName;
  * Header names whose real value contains a character that a Java identifier cannot have: legal name in the constant,
  * real value in the constructor, exposed by {@code getValue()}.
  */
-enum SendGridEmailSenderSpecialWords implements CcpJsonFieldName{
+enum SendGridEmailProviderSpecialWords implements CcpJsonFieldName{
 	/** The {@code User-agent} header. */
 	User_Agent("User-agent")
 	;
@@ -34,7 +34,9 @@ enum SendGridEmailSenderSpecialWords implements CcpJsonFieldName{
 		/** The recipients of a personalization. */
 		to,
 		/** An e-mail address. */
-		email
+		email,
+		/** The custom headers of the message. */
+		headers
 	}
 	/** The real name. */
 	private final String value;
@@ -43,7 +45,7 @@ enum SendGridEmailSenderSpecialWords implements CcpJsonFieldName{
 	 * Associates the constant with its real name.
 	 * @param value the real name
 	 */
-	private SendGridEmailSenderSpecialWords(String value) {
+	private SendGridEmailProviderSpecialWords(String value) {
 		this.value = value;
 	}
 
